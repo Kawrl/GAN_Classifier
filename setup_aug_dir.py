@@ -29,8 +29,8 @@ def fill_sub_dir(sub_dir, file_subset, new_dir_path,fake=False):
         new_file.symlink_to(file)
 
 def add_fake_samples(img_dir,fake_dir,add_samples_per_class):
-    
-    aug_path = Path('/home/karl/Documents/GeneratedTensors/augmented_'+str(add_samples_per_class))
+    aug_name = 'augmented_'+str(add_samples_per_class)
+    aug_path = Path.cwd() / aug_name
 
     
     if aug_path.exists():
@@ -73,8 +73,9 @@ def add_fake_samples(img_dir,fake_dir,add_samples_per_class):
     return aug_path
 
 def add_pca_samples(img_dir,fake_dir,add_samples_per_class,path_dct):
-    
-    aug_path = Path('/home/karl/Documents/GeneratedTensors/augmented_norm_'+str(add_samples_per_class))
+
+    aug_name = 'augmented_norm_'+str(add_samples_per_class)    
+    aug_path = Path.cwd() / aug_name
     
     if aug_path.exists():
         if aug_path.is_dir():
