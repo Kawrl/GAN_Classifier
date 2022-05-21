@@ -70,7 +70,6 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
                 'epoch': epoch ,
                 'state_dict': model.state_dict(),
                 'optimizer' : optimizer.state_dict(),
-                'scheduler' : scheduler.state_dict()
             })
 
     return model, train_losses, train_accs, val_losses, val_accs
@@ -229,7 +228,7 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     _, train_losses, train_accs, val_losses, val_accs = training_loop(resnet, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every)
 
     logging.info('Done!')
-    model_path = '.' + log_name[:-4] + 'classifier.pth'
+    model_path = log_name[:-4] + 'classifier.pth'
     fpath = './resnet_real_classifier.pth'
     torch.save(resnet.state_dict(), model_path)
     logging.info(f'Model saved to {fpath}')
