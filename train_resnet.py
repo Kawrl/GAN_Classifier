@@ -165,8 +165,10 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
         
     else:
         model_name = 'only_real'
-    
-    fake_dir_str = Path.cwd().as_posix() + '/' + model_name
+    fake_dir_save = Path('/data/saved_classifier_logs')
+    if not fake_dir_save.exists():
+        fake_dir_save.mkdir()
+    fake_dir_str = fake_dir_save.as_posix() + '/' + model_name
     hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples.png'
     prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples.png'
     log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples.log'
@@ -248,7 +250,7 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     test_msg = 'Evaluating on test set.'
     logging.info(test_msg)
 
-    test_dir = Path.cwd() / 'test_crops'
+    test_dir = Path('/data') / 'test_crops'
     test_data = create_dataset(test_dir)
     test_loader  = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
