@@ -22,13 +22,13 @@ def fill_sub_dir(sub_dir, file_subset, new_dir_path,fake=False):
         new_file = sub_dir_path / fname
         
         # In case of file already existing:
-        if new_file.exists():
-            fname = 'fake_2_' + file.name
+        c=1
+        while new_file.exists():
+            num=str(c)
+            fname = 'fake_' + num + '_file.name'
             new_file = sub_dir_path / fname
+            c += 1
 
-            if new_file.exists():
-                fname = 'fake_3_' + file.name
-                new_file = sub_dir_path / fname
 
 
         new_file.symlink_to(file)
