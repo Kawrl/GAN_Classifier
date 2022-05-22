@@ -31,6 +31,7 @@ def fill_sub_dir(sub_dir, file_subset, new_dir_path,fake=False):
 def add_fake_samples(img_dir,fake_dir,add_samples_per_class):
     aug_name = 'augmented_'+str(add_samples_per_class)
     aug_path = Path.cwd() / aug_name
+    
 
     
     if aug_path.exists():
@@ -73,8 +74,7 @@ def add_fake_samples(img_dir,fake_dir,add_samples_per_class):
     return aug_path
 
 def add_pca_samples(img_dir,fake_dir,add_samples_per_class,path_dct):
-
-    aug_name = 'augmented_norm_'+str(add_samples_per_class)    
+    aug_name = 'augmented_norm_'+str(add_samples_per_class)
     aug_path = Path.cwd() / aug_name
     
     if aug_path.exists():
@@ -128,3 +128,54 @@ def add_pca_samples(img_dir,fake_dir,add_samples_per_class,path_dct):
           f'\nNumber of augmented training set is now {augmented_num_samples}')
 
     return aug_path
+
+def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_dict_over90, path_dict_under90):
+    aug_name = 'augmented_norm_'+str(add_samples_per_class)
+    aug_path = Path.cwd() / aug_name
+    if aug_path.exists():
+        if aug_path.is_dir():
+            shutil.rmtree(aug_path)
+        else:
+            print("Unknown item: {}, remove manually".format(aug_path))
+
+    if not aug_path.exists():
+        aug_path.mkdir()
+
+    print('Adding all real samples:')
+    for label_dir in img_dir.iterdir():
+        if not label_dir.is_dir():
+            continue
+        label = label_dir.stem
+        all_files = list(label_dir.glob('*'))
+        
+        # Moving train/val set:
+        fill_sub_dir(label, all_files, aug_path)
+
+    print(f'Adding {add_samples_per_class} of fake images per class:')
+    for label_dir in fake_dir.iterdir():
+        if not label_dir.is_dir():
+            continue
+        label = label_dir.stem
+        outlier_files = path_dict_over90[int(label)]
+        normal_files = path_dict_under90[int(label)]
+
+        outlier_size = add_samples_per_class // 2
+        normal_size = add_samples_per_class-outlier_size
+
+        subset_outliers = random.sample(outlier_files, outlier_size)
+        subset_normal = random.sample(normal_files, normal_size)
+        
+        subset = subset_outliers+subset_normal
+        
+        # Moving train/val set:
+        fill_sub_dir(label, subset, aug_path,fake=True)
+
+
+    original_num_samples = len(list(img_dir.glob('*/*')))
+    augmented_num_samples = len(list(aug_path.glob('*/*')))
+
+    print(f'There were originally {original_num_samples} number of samples in the training set.',
+          f'\nNumber of augmented training set is now {augmented_num_samples}')
+
+    return aug_path
+

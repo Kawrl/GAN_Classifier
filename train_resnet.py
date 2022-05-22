@@ -14,8 +14,8 @@ from torch.optim import Adam
 import logging
 
 from cropsdata import create_dataset
-from setup_aug_dir import add_fake_samples, add_pca_samples
-from gen_pca import create_path_dct
+from setup_aug_dir import add_fake_samples, add_pca_samples, add_pca_samples_over_under_90
+from gen_pca import create_path_dct_small_set
 
 RANDOM_STATE = 42
 torch.manual_seed(RANDOM_STATE)
@@ -69,7 +69,7 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
         save_checkpoint({
                 'epoch': epoch ,
                 'state_dict': model.state_dict(),
-                'optimizer' : optimizer.state_dict(),
+                'optimizer' : optimizer.state_dict()
             })
 
     return model, train_losses, train_accs, val_losses, val_accs
@@ -157,7 +157,7 @@ def testClassess(dataset,loader,model,device,mode='test'):
         print(acc_info)
         logging.info(acc_info)
 
-def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling=False):
+def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling=False,only_outliers=True):
 
     if fake_dir is not None:
         model_name = fake_dir.name        
@@ -171,9 +171,14 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples.png'
     log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples.log'
     if pca_sampling:
-        hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_PCA.png'
-        prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_PCA.png'
-        log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_PCA.log'
+        if only_outliers:
+            hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_PCA_only_outliers.png'
+            prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_PCA_only_outliers.png'
+            log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_PCA_only_outliers.log'
+        else:
+            hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_PCA_also_normal.png'
+            prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_PCA_also_normal.png'
+            log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_PCA_also_normal.log'
 
 
 
@@ -189,8 +194,14 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     if pca_sampling:
         logging.info('Adding fake samples via subspace sampling.')
 
-        path_dct = create_path_dct(img_dir,fake_dir)
-        img_dir = add_pca_samples(img_dir, fake_dir, add_samples_per_class,path_dct)
+        path_dict_over90, path_dict_under90 = create_path_dct_small_set(img_dir,fake_dir)
+        
+        # Only sample over 90 percentile:
+        if only_outliers:
+            img_dir = add_pca_samples(img_dir, fake_dir, add_samples_per_class,path_dict_over90)
+        # Sample from both > 90th percentile and from rest:
+        else:
+            img_dir = add_pca_samples_over_under_90(img_dir, fake_dir, add_samples_per_class,path_dict_over90, path_dict_under90)
 
         augmented_num_samples = len(list(img_dir.glob('*/*')))
         logging.info(f'Size of augmented dataset: {augmented_num_samples}.')
@@ -237,7 +248,7 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     test_msg = 'Evaluating on test set.'
     logging.info(test_msg)
 
-    test_dir = Path('/home/karl/Documents/GeneratedTensors/test_crops')
+    test_dir = Path.cwd() / 'test_crops'
     test_data = create_dataset(test_dir)
     test_loader  = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 

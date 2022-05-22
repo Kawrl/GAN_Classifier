@@ -24,4 +24,4 @@ if __name__ == '__main__':
     fake_dir=args.fake_dir
     num_samples=args.num_samples
 
-    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True)
+    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True,only_outliers=False)

@@ -134,25 +134,29 @@ def vis_img(img, mean=None, std=None):
     plt.show()
 
 def find_highest_lowest(norm_dct):
-    idx_dict = {}
+    idxs_over_90 = {}
+    idxs_under_90 = {}
     for label in norm_dct.keys():
         norms, idxs = zip(*norm_dct[label])
         threshold = np.percentile(np.array(norms),90)
         # Indexes of images above the 90 percentile:
         over_90 = np.array(norms)>=threshold
         idxs=np.array(idxs)
-        idx_dict[label]=idxs[over_90]
+        idxs_over_90[label]=idxs[over_90]
+        # Indexes of images under 90th percentile
+        under_90 = np.array(norms)<threshold
+        idxs_under_90[label]=idxs[under_90]
 
-    return idx_dict
+    return idxs_over_90, idxs_under_90
 
 
-def create_path_dct(real_dir, fake_dir):
+def create_path_dct_small_set(real_dir, fake_dir):
 
     cropset = create_dataset(real_dir)
 
     img_dict = create_img_dict(cropset)
-    norm_dct,pca_dct=create_norm_dict(cropset,img_dict,norm_dct_pickle=False, num_components=682)
 
+    norm_dct,pca_dct=create_norm_dict(cropset,img_dict,norm_dct_pickle=False, num_components=682)
     fake_set = create_dataset(fake_dir)
 
     fake_norm_dct = {}
@@ -175,11 +179,14 @@ def create_path_dct(real_dir, fake_dir):
         # norm = compute_norm(reconstruct_diff)
         fake_norm_dct[label] = list(zip(norm,idxs))
 
-    idx_over_90=find_highest_lowest(fake_norm_dct)
-    path_dict = {i:[] for i in range(len(idx_over_90))}
+    idxs_over_90, idxs_under_90=find_highest_lowest(fake_norm_dct)
+    path_dict_over90 = {i:[] for i in range(len(idxs_over_90))}
+    path_dict_under90 = {i:[] for i in range(len(idxs_under_90))}
 
-    for i in idx_over_90:
-        for idx in idx_over_90[i]:
-            path_dict[i].append(fake_set.get_path(idx))
+    for label in idxs_over_90:
+        for idx in idxs_over_90[label]:
+            path_dict_over90[label].append(fake_set.get_path(idx))
+        for idx in idxs_under_90[label]:
+            path_dict_under90[label].append(fake_set.get_path(idx))
 
-    return path_dict
+    return path_dict_over90, path_dict_under90
