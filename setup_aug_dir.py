@@ -111,7 +111,7 @@ def add_pca_samples(img_dir,fake_dir,add_samples_per_class,path_dct):
             diff = add_samples_per_class%len(all_files)
 
             subset = random.sample(all_files, diff)
-            for _ in num_samplings:
+            for _ in range(num_samplings):
                 subset += random.sample(all_files, len(all_files))
             
         else:
@@ -172,7 +172,7 @@ def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_di
             diff = outlier_size%len(outlier_files)
 
             subset_outliers = random.sample(outlier_files, diff)
-            for _ in num_samplings:
+            for _ in range(num_samplings):
                 subset_outliers += random.sample(outlier_files, len(outlier_files))
             
         else:
@@ -186,7 +186,7 @@ def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_di
             diff = normal_size%len(normal_files)
 
             subset_normal = random.sample(normal_files, diff)
-            for _ in num_samplings:
+            for _ in range(num_samplings):
                 subset_normal += random.sample(normal_files, len(normal_files))
             
         else:
