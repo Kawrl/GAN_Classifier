@@ -10,6 +10,7 @@ train_files = train_files_1000+train_files_200
 test_dir_names = [f.name for f in test_dir.glob('*/*')]
 
 diff = list(set(train_files) - set(test_dir_names))
+print(diff)
 assert sorted(diff) == sorted(train_files), "Something is wrong. This assumes there is leakage from test to train."
 
 test_dir = Path('/data/test_crops')

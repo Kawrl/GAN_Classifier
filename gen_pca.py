@@ -14,7 +14,10 @@ from matplotlib import pyplot as plt
 #    norm = ((vector**2).sum(dim=-1)).sqrt()
 #    return norm.numpy()
 
-def create_img_dict(dataset):    
+def create_img_dict(dataset):
+    '''
+    Creates a dictionary of flattened images for each image in their respective classes.
+    '''
     num_classes = len(dataset.label_dict.keys())
 
     img_dict = {i:[] for i in range(num_classes)}
@@ -25,13 +28,9 @@ def create_img_dict(dataset):
         # Store tuples of flattened images and their index in dataset in order to keep track of them.
         img_dict[label].append((flattened_img, idx))
 
-    # Done in around 5 mins
-    with open('img_dict.pickle', 'wb') as handle:
-        pickle.dump(img_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
     return img_dict
 
-def create_norm_dict(dataset,img_dict,norm_dct_pickle=False, num_components=682):
+def create_norm_dict(dataset,img_dict,norm_dct_pickle=False, num_components=100):
     '''
     Computes a dictionary with norms of projection vectors(?) for each data point per class,
     from the subspace that spans the given number of principal components.
@@ -50,8 +49,6 @@ def create_norm_dict(dataset,img_dict,norm_dct_pickle=False, num_components=682)
             start = time()
             imgs, idxs = zip(*img_dict[label])
             stacked_imgs = torch.stack(imgs)
-            num_components = min(num_components, len(imgs))
-            num_components = 100
             pca = PCA(num_components)
             pca.fit(stacked_imgs)
             print(f'Total variance explained by {num_components} principal components: {pca.explained_variance_ratio_.sum()}')
@@ -151,22 +148,31 @@ def find_highest_lowest(norm_dct):
 
 
 def create_path_dct_small_set(real_dir, fake_dir):
+    '''
+    Creates dictionary of files in respective classes depending on the length of the projection
+    norm. The subspace is computed from the real data, and the fake images are projected onto this.
 
-    cropset = create_dataset(real_dir)
+    '''
 
-    img_dict = create_img_dict(cropset)
+    real_set = create_dataset(real_dir)
+    img_dict = create_img_dict(real_set)
 
-    norm_dct,pca_dct=create_norm_dict(cropset,img_dict,norm_dct_pickle=False, num_components=682)
+    if len(real_set)//11 < 682:
+        num_components = 100
+    else:
+        num_components=682
+
+    norm_dct,pca_dct=create_norm_dict(real_set,img_dict,norm_dct_pickle=False, num_components=num_components)
     fake_set = create_dataset(fake_dir)
 
     fake_norm_dct = {}
 
     num_classes = len(fake_set.label_dict.keys())      
 
-    reacgan_img_dct = create_img_dict(fake_set)
+    fake_img_dict = create_img_dict(fake_set)
 
     for label in range(num_classes):
-        imgs, idxs = zip(*reacgan_img_dct[label])
+        imgs, idxs = zip(*fake_img_dict[label])
         stacked_imgs = torch.stack(imgs)
         pca = pca_dct[label]
         

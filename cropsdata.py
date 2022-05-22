@@ -169,6 +169,5 @@ def create_dataset(img_dir):
         CustomNormalization(new_min=0,new_max=1, source_min=0, source_max=65535),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ])
-    #train_val_path = Path.cwd() / 'small_crops'
     return CropsData(img_dir,real_set_transform)
 

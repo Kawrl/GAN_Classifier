@@ -159,6 +159,7 @@ def testClassess(dataset,loader,model,device,mode='test'):
 
 def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling=False,only_outliers=True):
 
+    # Naming files:
     if fake_dir is not None:
         model_name = fake_dir.name        
         fake_dir = fake_dir / 'imgs'
@@ -183,7 +184,6 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
             log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_PCA_also_normal.log'
 
 
-
     if Path(log_name).exists():
         Path(log_name).unlink()
     logging.basicConfig(level=logging.INFO, filename=log_name,
@@ -202,14 +202,15 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     logging.info(f'Size of dataset: {original_num_samples}.')
 
     if pca_sampling:
+        # If sampling using PCA, first find all files above or below the 90th percentile of
+        # projection norms:
         logging.info('Adding fake samples via subspace sampling.')
-
         path_dict_over90, path_dict_under90 = create_path_dct_small_set(img_dir,fake_dir)
         
-        # Only sample over 90 percentile:
+        # If only sample over 90 percentile:
         if only_outliers:
             img_dir = add_pca_samples(img_dir, fake_dir, add_samples_per_class,path_dict_over90)
-        # Sample from both > 90th percentile and from rest:
+        # If sample from both > 90th percentile and from rest:
         else:
             img_dir = add_pca_samples_over_under_90(img_dir, fake_dir, add_samples_per_class,path_dict_over90, path_dict_under90)
 
@@ -267,6 +268,10 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     for f in train_files:
         if f in test_files:
             raise ValueError(f'File {f} in both train set and test set!')
+
+    assert len(list(set(train_files) & set(test_files))) > 0, \
+        f"Intersection of train and test files: {list(set(train_files) & set(test_files))}"
+
 
     test_loader  = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
