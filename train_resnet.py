@@ -252,6 +252,14 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
 
     test_dir = Path('/data') / 'test_crops'
     test_data = create_dataset(test_dir)
+
+    # Asserting that there is no data leakage:
+    train_files = [f.name for f in img_dir.glob('*/*')]
+    test_files = [f.name for f in test_dir.glob('*/*')]
+    for f in train_files:
+        if f in test_files:
+            raise ValueError(f'File {f} in both train set and test set!')
+
     test_loader  = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
     test_loss_cum = 0
