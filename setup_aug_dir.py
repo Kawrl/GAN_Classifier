@@ -106,17 +106,19 @@ def add_pca_samples(img_dir,fake_dir,add_samples_per_class,path_dct):
         if add_samples_per_class > len(all_files):
             # In case we want to sample more imgs than available,
             # some images will be randomly upsampled.
-            
-            diff = add_samples_per_class-len(all_files)           
+
+            num_samplings = add_samples_per_class//len(all_files)
+            diff = add_samples_per_class%len(all_files)
+
+            subset = random.sample(all_files, diff)
+            for _ in num_samplings:
+                subset += random.sample(all_files, len(all_files))
             
         else:
-            diff = 0
+            subset = random.sample(all_files, add_samples_per_class)
 
+        print(f'{len(subset)} files sampled from label {label} in fake subset.')
 
-        subset = random.sample(all_files, add_samples_per_class-diff)
-        diff = min(diff, len(all_files))
-        subset += random.sample(all_files, diff)
-        
         # Moving train/val set:
         fill_sub_dir(label, subset, aug_path,fake=True)
 
@@ -162,9 +164,35 @@ def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_di
         outlier_size = add_samples_per_class // 2
         normal_size = add_samples_per_class-outlier_size
 
-        subset_outliers = random.sample(outlier_files, outlier_size)
-        subset_normal = random.sample(normal_files, normal_size)
-        
+        if outlier_size > len(outlier_files):
+            # In case we want to sample more imgs than available,
+            # some images will be randomly upsampled.
+
+            num_samplings = outlier_size//len(outlier_files)
+            diff = outlier_size%len(outlier_files)
+
+            subset_outliers = random.sample(outlier_files, diff)
+            for _ in num_samplings:
+                subset_outliers += random.sample(outlier_files, len(outlier_files))
+            
+        else:
+            subset_outliers = random.sample(outlier_files, outlier_size)
+
+        if normal_size > len(normal_files):
+            # In case we want to sample more
+            # some images will be randomly upsampled.  
+
+            num_samplings = normal_size//len(normal_files)
+            diff = normal_size%len(normal_files)
+
+            subset_normal = random.sample(normal_files, diff)
+            for _ in num_samplings:
+                subset_normal += random.sample(normal_files, len(normal_files))
+            
+        else:
+            subset_normal = random.sample(normal_files, normal_size)
+
+        print(f'{len(subset_outliers)} outlier files sampled, and {len(subset_normal)} normal files sampled.')
         subset = subset_outliers+subset_normal
         
         # Moving train/val set:
