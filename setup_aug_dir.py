@@ -26,6 +26,11 @@ def fill_sub_dir(sub_dir, file_subset, new_dir_path,fake=False):
             fname = 'fake_2_' + file.name
             new_file = sub_dir_path / fname
 
+            if new_file.exists():
+                fname = 'fake_3_' + file.name
+                new_file = sub_dir_path / fname
+
+
         new_file.symlink_to(file)
 
 def add_fake_samples(img_dir,fake_dir,add_samples_per_class):
