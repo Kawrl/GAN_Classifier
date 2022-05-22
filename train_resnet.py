@@ -341,3 +341,11 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
     testClassess(test_data, test_loader, resnet, device,mode='test')
 
     logging.info('\nFinished!')
+
+    print('Removing temporary dataset...')
+    for subdir in img_dir.iterdir():
+        for f in subdir.iterdir():
+            if f.is_file():
+                f.unlink()
+        subdir.rmdir()
+    img_dir.rmdir()
