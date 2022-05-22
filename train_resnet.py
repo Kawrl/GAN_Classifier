@@ -269,7 +269,7 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
         if f in test_files:
             raise ValueError(f'File {f} in both train set and test set!')
 
-    assert len(list(set(train_files) & set(test_files))) > 0, \
+    assert len(list(set(train_files) & set(test_files))) == 0, \
         f"Intersection of train and test files: {list(set(train_files) & set(test_files))}"
 
 
