@@ -188,7 +188,15 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
         Path(log_name).unlink()
     logging.basicConfig(level=logging.INFO, filename=log_name,
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
-
+    if pca_sampling:
+        title_msg = f'Starting {model_name}, {add_samples_per_class} samples, PCA.'
+        if only_outliers:
+            title_msg += 'Only outliers.'
+        else:
+            title_msg += 'Both outliers and normal data.'
+    else:
+        title_msg = f'Starting {model_name}, {add_samples_per_class} samples. Non PCA.' 
+    logging.info(title_msg)
     logging.info('Creating dataset...')
     original_num_samples = len(list(img_dir.glob('*/*')))
     logging.info(f'Size of dataset: {original_num_samples}.')

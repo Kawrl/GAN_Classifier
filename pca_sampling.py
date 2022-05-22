@@ -14,6 +14,7 @@ def load_parser():
     parser.add_argument("--img_dir", type=dir_path, default="./")
     parser.add_argument("--fake_dir", type=dir_path, default=None)
     parser.add_argument("--num_samples", type=int, default=None)
+    parser.add_argument("--only_outliers", action="store_true")
     args = parser.parse_args()    
 
     return args
@@ -23,5 +24,6 @@ if __name__ == '__main__':
     img_dir= args.img_dir
     fake_dir=args.fake_dir
     num_samples=args.num_samples
+    only_outliers = args.only_outliers
 
-    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True,only_outliers=False)
+    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True,only_outliers=only_outliers)
