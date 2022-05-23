@@ -264,7 +264,7 @@ def train_resnet(img_dir,
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = Adam(resnet.parameters(), lr=5e-5, weight_decay=0.0001)
-    num_epochs = 20
+    num_epochs = 25
     print_every=len(train_loader)//2 +2
     _, train_losses, train_accs, val_losses, val_accs = training_loop(resnet, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every)
 
