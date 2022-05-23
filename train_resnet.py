@@ -164,11 +164,13 @@ def train_resnet(img_dir,
                 only_outliers=True,
                 use_full_pca=False):
 
+    print('Img dir:',img_dir)
+    print('Img dir stem:', img_dir.stem)
     # Naming files:
     if fake_dir is not None:
         model_name = fake_dir.name        
-        fake_dir = fake_dir / 'imgs'
-        
+        fake_dir = fake_dir / 'imgs'        
+    
     else:
         model_name = img_dir.stem
     fake_dir_save = Path('/data/saved_classifier_logs')
