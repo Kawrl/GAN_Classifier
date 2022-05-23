@@ -10,8 +10,8 @@ for label in rest_set_path.iterdir():
 
 print(f'In total: {total_} files')
 
-all_rest_files = rest_set_path.glob('*/*.tiff')
-all_files = test_set_path.glob('*/*.tiff')
+all_rest_files = rest_set_path.glob('*/*')
+all_files = test_set_path.glob('*/*')
 assert len(list(all_rest_files))==total_, "Something wrong with file counting?"
 
 all_rest_file_names = [f.name for f in all_rest_files]
