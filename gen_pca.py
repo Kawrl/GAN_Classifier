@@ -10,6 +10,7 @@ import pickle
 from matplotlib import pyplot as plt
 
 
+
 #def compute_norm(vector: torch.tensor) -> torch.tensor:
 #    norm = ((vector**2).sum(dim=-1)).sqrt()
 #    return norm.numpy()
@@ -147,22 +148,31 @@ def find_highest_lowest(norm_dct):
     return idxs_over_90, idxs_under_90
 
 
-def create_path_dct_small_set(real_dir, fake_dir):
+def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
     '''
     Creates dictionary of files in respective classes depending on the length of the projection
     norm. The subspace is computed from the real data, and the fake images are projected onto this.
 
     '''
 
-    real_set = create_dataset(real_dir)
-    img_dict = create_img_dict(real_set)
+    if not use_full_pca:
+        # If using local dataset for creating PCA subspace:
+        real_set = create_dataset(real_dir)
+        img_dict = create_img_dict(real_set)
 
-    if len(real_set)//11 < 682:
-        num_components = 100
+        if len(real_set)//11 < 682:
+            num_components = 100
+        else:
+            num_components=682
+
+        norm_dct,pca_dct=create_norm_dict(real_set,img_dict,norm_dct_pickle=False, num_components=num_components)
+    
     else:
-        num_components=682
+        # If using precomputed PCA subspace using full set (excluding test set)
+        with open('pca_dct_full_set.pickle', 'rb') as f:
+            pca_dct = pickle.load(f)
 
-    norm_dct,pca_dct=create_norm_dict(real_set,img_dict,norm_dct_pickle=False, num_components=num_components)
+
     fake_set = create_dataset(fake_dir)
 
     fake_norm_dct = {}

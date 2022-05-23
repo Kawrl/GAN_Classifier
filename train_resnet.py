@@ -157,7 +157,12 @@ def testClassess(dataset,loader,model,device,mode='test'):
         print(acc_info)
         logging.info(acc_info)
 
-def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling=False,only_outliers=True):
+def train_resnet(img_dir, 
+                fake_dir=None, 
+                add_samples_per_class=None,
+                pca_sampling=False,
+                only_outliers=True,
+                use_full_pca=False):
 
     # Naming files:
     if fake_dir is not None:
@@ -182,6 +187,15 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
             hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_PCA_also_normal.png'
             prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_PCA_also_normal.png'
             log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_PCA_also_normal.log'
+        if use_full_pca:            
+            if only_outliers:
+                hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_FULL_PCA_only_outliers.png'
+                prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_FULL_PCA_only_outliers.png'
+                log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_FULL_PCA_only_outliers.log'
+            else:
+                hard_case_plot_name =fake_dir_str + f'_AugEval_hard_cases_{str(add_samples_per_class)}samples_FULL_PCA_also_normal.png'
+                prediction_plot_name = fake_dir_str + f'_AugEval_predictions_{str(add_samples_per_class)}samples_FULL_PCA_also_normal.png'
+                log_name = fake_dir_str + f'_AugEval_{str(add_samples_per_class)}samples_FULL_PCA_also_normal.log'
 
 
     if Path(log_name).exists():
@@ -190,6 +204,8 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
     if pca_sampling:
         title_msg = f'Starting {model_name}, {add_samples_per_class} samples, PCA.'
+        if use_full_pca:
+            title_msg = f'Starting {model_name}, {add_samples_per_class} samples, (full set) PCA.'
         if only_outliers:
             title_msg += 'Only outliers.'
         else:
@@ -205,7 +221,10 @@ def train_resnet(img_dir, fake_dir=None, add_samples_per_class=None,pca_sampling
         # If sampling using PCA, first find all files above or below the 90th percentile of
         # projection norms:
         logging.info('Adding fake samples via subspace sampling.')
-        path_dict_over90, path_dict_under90 = create_path_dct_small_set(img_dir,fake_dir)
+        if not use_full_pca:
+            path_dict_over90, path_dict_under90 = create_path_dct_small_set(img_dir,fake_dir)
+        else:
+            path_dict_over90, path_dict_under90 = create_path_dct_small_set(img_dir,fake_dir,use_full_pca=True)
         
         # If only sample over 90 percentile:
         if only_outliers:
