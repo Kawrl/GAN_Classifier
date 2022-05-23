@@ -164,8 +164,6 @@ def train_resnet(img_dir,
                 only_outliers=True,
                 use_full_pca=False):
 
-    print('Img dir:',img_dir)
-    print('Img dir stem:', img_dir.stem)
     # Naming files:
     if fake_dir is not None:
         model_name = fake_dir.name        
@@ -376,10 +374,11 @@ def train_resnet(img_dir,
 
     logging.info('\nFinished!')
 
-    print('Removing temporary dataset...')
-    for subdir in img_dir.iterdir():
-        for f in subdir.iterdir():
-            if f.is_file():
-                f.unlink()
-        subdir.rmdir()
-    img_dir.rmdir()
+    if fake_dir:
+        print('Removing temporary dataset...')
+        for subdir in img_dir.iterdir():
+            for f in subdir.iterdir():
+                if f.is_file():
+                    f.unlink()
+            subdir.rmdir()
+        img_dir.rmdir()
