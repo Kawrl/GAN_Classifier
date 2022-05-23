@@ -12,7 +12,7 @@ print(f'In total: {total_} files')
 
 all_rest_files = rest_set_path.glob('*/*.tiff')
 all_files = full_set_path.glob('*/*.tiff')
-assert len(all_rest_files)==total_, "Something wrong with file counting?"
+assert len(list(all_rest_files))==total_, "Something wrong with file counting?"
 
 all_rest_file_names = [f.name for f in all_rest_files]
 full_file_names = [f.name for f in all_files]
