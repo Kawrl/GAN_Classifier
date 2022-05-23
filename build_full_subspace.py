@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
     rest_file_dict = {}
 
+    # Iterate through all files in the full dataset to select files that are NOT in the test set.
     for label in crops_path.iterdir():
         all_files = list(label.glob('*.tiff'))
         test_files = [f.name for f in list(test_path.glob(f'{label.stem}/*.tiff'))]
@@ -97,7 +98,9 @@ if __name__ == '__main__':
     # Create rest set:
     rest_data = create_dataset(rest_set_path)
 
+    # Generate dictinoary of all flattened files per class in the rest set:
     rest_img_dict = create_img_dict(rest_data)
 
+    # ... and then generate a subspace based on the full set (excluding the test set)
     rest_pca_dct = create_norm_dict(rest_data,rest_img_dict, num_components=682)
 
