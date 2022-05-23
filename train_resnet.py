@@ -170,7 +170,7 @@ def train_resnet(img_dir,
         fake_dir = fake_dir / 'imgs'
         
     else:
-        model_name = 'only_real'
+        model_name = img_dir.stem
     fake_dir_save = Path('/data/saved_classifier_logs')
     if not fake_dir_save.exists():
         fake_dir_save.mkdir()
