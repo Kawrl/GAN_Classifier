@@ -12,7 +12,7 @@ print(f'In total: {total_} files')
 
 all_rest_files = list(rest_set_path.glob('*/*'))
 all_files = list(test_set_path.glob('*/*'))
-assert len(list(all_rest_files))==total_, "Something wrong with file counting?"
+assert len(all_rest_files)==total_, "Something wrong with file counting?"
 
 all_rest_file_names = [f.name for f in all_rest_files]
 full_file_names = [f.name for f in all_files]
