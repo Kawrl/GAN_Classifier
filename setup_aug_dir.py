@@ -166,7 +166,7 @@ def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_di
         outlier_files = path_dict_over90[int(label)]
         normal_files = path_dict_under90[int(label)]
 
-        outlier_size = add_samples_per_class // 2
+        outlier_size = add_samples_per_class // 3
         normal_size = add_samples_per_class-outlier_size
 
         if outlier_size > len(outlier_files):
