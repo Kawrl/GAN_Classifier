@@ -358,7 +358,7 @@ if __name__ == '__main__':
         ])
 
     train_val_path = img_dir
-    test_path = Path.cwd() / 'test_crops'
+    test_path = Path('/data/test_crops')
     train_val_data = CropsData(train_val_path,real_set_transform)
     test_data = CropsData(test_path,real_set_transform)
 
