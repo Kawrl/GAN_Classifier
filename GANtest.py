@@ -392,6 +392,8 @@ def gantest(model_dir):
     pred_list = []
     ixs_lst = []
 
+    resnet.to(device)
+
     with torch.no_grad():
         for batch_index, (x, y, idx_) in enumerate(test_loader, 1):
             inputs = x.to(device)
