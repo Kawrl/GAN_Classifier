@@ -166,7 +166,7 @@ def add_pca_samples_over_under_90(img_dir,fake_dir,add_samples_per_class,path_di
         outlier_files = path_dict_over90[int(label)]
         normal_files = path_dict_under90[int(label)]
 
-        outlier_proportion = 4
+        outlier_proportion = 3
         outlier_size = add_samples_per_class // outlier_proportion
         print(f"Outlier proportion: {1/outlier_proportion}")
         normal_size = add_samples_per_class-outlier_size
