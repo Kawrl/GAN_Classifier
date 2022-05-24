@@ -19,8 +19,6 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from itertools import chain
 from PIL import Image
 from pathlib import Path
-from torchsummary import summary
-
 from sklearn.model_selection import train_test_split
 from torch.optim import Adam
 
