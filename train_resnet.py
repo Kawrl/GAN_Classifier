@@ -12,6 +12,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 from torch.optim import Adam
 import logging
+import copy
 
 from cropsdata import create_dataset
 from setup_aug_dir import add_fake_samples, add_pca_samples, add_pca_samples_over_under_90
@@ -42,6 +43,8 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
     model.to(device)
     train_losses, train_accs, val_losses, val_accs = [], [], [], []
 
+    best_loss = np.inf
+
     for epoch in range(1, num_epochs+1):
         start_time = time()
         model, train_loss, train_acc = train_epoch(model,
@@ -66,13 +69,18 @@ def training_loop(model, optimizer, loss_fn, train_loader, val_loader, num_epoch
         val_losses.append(val_loss)
         val_accs.append(val_acc)
 
-        save_checkpoint({
-                'epoch': epoch ,
-                'state_dict': model.state_dict(),
-                'optimizer' : optimizer.state_dict()
-            })
 
-    return model, train_losses, train_accs, val_losses, val_accs
+        if val_loss < best_loss:
+            best_loss = val_loss
+            best_model_wts = copy.deepcopy(model.state_dict())
+
+        #save_checkpoint({
+        #        'epoch': epoch ,
+        #        'state_dict': model.state_dict(),
+        #        'optimizer' : optimizer.state_dict()
+        #    })
+
+    return model, train_losses, train_accs, val_losses, val_accs, best_model_wts
 
 
 
@@ -266,7 +274,9 @@ def train_resnet(img_dir,
     optimizer = Adam(resnet.parameters(), lr=5e-5, weight_decay=0.0001)
     num_epochs = 25
     print_every=len(train_loader)//2 +2
-    _, train_losses, train_accs, val_losses, val_accs = training_loop(resnet, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every)
+    _, train_losses, train_accs, val_losses, val_accs, best_wts = training_loop(resnet, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every)
+
+    resnet.load_state_dict(best_wts)
 
     logging.info('Done!')
     model_path = log_name[:-4] + 'classifier.pth'
