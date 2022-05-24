@@ -1,6 +1,3 @@
-from create_eval_set import create_test_train_dirs
-from create_train_val_set import create_train_dirs
-
 import torch
 import torchvision.models as models
 import torch.nn as nn
@@ -22,7 +19,6 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from itertools import chain
 from PIL import Image
 from pathlib import Path
-from torchsummary import summary
 
 from sklearn.model_selection import train_test_split
 from torch.optim import Adam
@@ -290,9 +286,6 @@ if __name__ == "__main__":
     RANDOM_STATE = 42
     torch.manual_seed(0)
 
-    # We want 1000 samples from each class:
-    #create_test_train_dirs()
-    #create_train_dirs(1000)
 
     real_set_transform = transforms.Compose([
         TiffToTensor(),

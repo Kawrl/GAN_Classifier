@@ -329,7 +329,7 @@ def gantest(model_dir):
     if not test_dir.exists():
         test_dir = model_dir
     model_name = model_dir.name
-    test_dir_str = model_dir.as_posix() + '/' + model_name
+    test_dir_str = Path.cwd().as_posix() + '/' + model_name
 
     log_name = test_dir_str + '_GANtest_log.log'
     real_plot_name = test_dir_str + '_GANtest_realplt.png'
