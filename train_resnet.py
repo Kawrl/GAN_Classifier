@@ -276,7 +276,7 @@ def train_resnet(img_dir,
     print_every=len(train_loader)//2 +2
     _, train_losses, train_accs, val_losses, val_accs, best_wts = training_loop(resnet, optimizer, loss_fn, train_loader, val_loader, num_epochs, print_every)
 
-    #resnet.load_state_dict(best_wts)
+    resnet.load_state_dict(best_wts)
 
     logging.info('Done!')
     model_path = log_name[:-4] + 'classifier.pth'
