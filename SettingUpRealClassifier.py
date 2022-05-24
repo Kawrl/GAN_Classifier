@@ -295,7 +295,7 @@ if __name__ == "__main__":
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ])
     logging.info('Creating dataset...')
-    train_val_path = Path('/data/small_crops_200')
+    train_val_path = Path('/data/small_crops_1000')
     train_val_data = CropsData(train_val_path,real_set_transform)
     logging.info('Done.')
 
