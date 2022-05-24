@@ -385,7 +385,7 @@ def gantest(model_dir):
     # Evaluating on test set:
     test_loss_cum = 0
     test_acc_cum = 0
-    resnet.eval()
+    
     device = torch.device("cuda" if torch.cuda.is_available() 
                                     else "cpu")
     gtruth = []
@@ -393,6 +393,7 @@ def gantest(model_dir):
     ixs_lst = []
 
     resnet.to(device)
+    resnet.eval()
 
     with torch.no_grad():
         for batch_index, (x, y, idx_) in enumerate(test_loader, 1):
@@ -413,52 +414,6 @@ def gantest(model_dir):
     test_msg = f'Accuracy on the test set is {100*test_accuracy:.3f}%.'
     logging.info(test_msg)
     print(test_msg)
-
-    hard_cases = [test_data[ix] for ix in ixs_lst]
-    hard_loader = DataLoader(hard_cases, 8)
-
-    plot_samples(dataset=hard_cases,
-                mean=0.5,
-                std=0.5,
-                suptitle='Hard cases',
-                fname=hard_case_plot_name)
-
-    hard_loader = DataLoader(hard_cases,64)
-
-    resnet.eval()
-    device = torch.device("cuda" if torch.cuda.is_available() 
-                                    else "cpu")
-    gtruth_small=[]
-    pred_list_small=[]
-    with torch.no_grad():
-        for batch_index, (x, y, idx_) in enumerate(hard_loader, 1):
-            inputs = x.to(device)
-            labels = y.to(device)
-            preds = resnet.forward(inputs)
-            batch_loss = loss_fn(preds, labels)
-            test_loss_cum += batch_loss.item()
-            hard_preds = preds.argmax(dim=1)
-            acc_batch_avg = (hard_preds == labels).float().mean().item()
-            gtruth_small.extend(labels.cpu().tolist())
-            pred_list_small.extend(hard_preds.cpu().tolist())
-            break
-
-    fig, axs = plt.subplots(5,5,figsize=(16,16))
-    axs = axs.ravel()
-
-    cases = zip(inputs[:25],labels[:25],hard_preds[:25])
-    mean=0.5
-    std=0.5
-    for idx,(img, label,prediction) in enumerate(cases):
-        #img = samples[0]
-        #prediction = samples[1]
-        img = (img + (mean/std))/(1/std)    
-        image_data = img.cpu().permute(1, 2, 0).numpy()
-        axs[idx].imshow(image_data)
-        axs[idx].axis('off')
-        axs[idx].set_title(f'Prediction: {prediction}. \nGround truth: {label}', fontsize=10)
-    plt.suptitle('Predictions and true labels', fontsize=30)
-    plt.savefig(prediction_plot_name)
 
     logging.info('---'*10)
     testClassess(test_data, test_loader, resnet, device,mode='test')
