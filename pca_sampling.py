@@ -27,4 +27,4 @@ if __name__ == '__main__':
     only_outliers = args.only_outliers
     print('Only outliers?', only_outliers)
 
-    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True,only_outliers=only_outliers)
+    train_resnet(img_dir, fake_dir, num_samples, pca_sampling=True,only_outliers=only_outliers,use_full_pca=True)
