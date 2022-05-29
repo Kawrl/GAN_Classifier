@@ -179,7 +179,7 @@ def train_resnet(img_dir,
     
     else:
         model_name = img_dir.stem
-    fake_dir_save = Path('/data/saved_classifier_logs_lower_ratio')
+    fake_dir_save = Path('/data/reset_set_classification')
     if not fake_dir_save.exists():
         fake_dir_save.mkdir()
     fake_dir_str = fake_dir_save.as_posix() + '/' + model_name
