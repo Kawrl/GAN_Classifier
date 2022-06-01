@@ -172,6 +172,7 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
         with open('pca_dct_full_set.pickle', 'rb') as f:
             pca_dct = pickle.load(f)
 
+    #if not use_full_pca:
 
     fake_set = create_dataset(fake_dir)
 
@@ -204,5 +205,11 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
             path_dict_over90[label].append(fake_set.get_path(idx))
         for idx in idxs_under_90[label]:
             path_dict_under90[label].append(fake_set.get_path(idx))
+
+    # Saving dictionaries with file paths:
+    with open('path_dict_over90.pickle', 'wb') as handle:
+        pickle.dump(path_dict_over90, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('path_dict_under90.pickle', 'wb') as handle:
+        pickle.dump(path_dict_under90, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     return path_dict_over90, path_dict_under90
