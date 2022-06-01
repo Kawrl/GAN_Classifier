@@ -172,44 +172,49 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
         with open('pca_dct_full_set.pickle', 'rb') as f:
             pca_dct = pickle.load(f)
 
-    #if not use_full_pca:
+    if not use_full_pca:
+        fake_set = create_dataset(fake_dir)
 
-    fake_set = create_dataset(fake_dir)
+        fake_norm_dct = {}
 
-    fake_norm_dct = {}
+        num_classes = len(fake_set.label_dict.keys())      
 
-    num_classes = len(fake_set.label_dict.keys())      
+        fake_img_dict = create_img_dict(fake_set)
 
-    fake_img_dict = create_img_dict(fake_set)
+        for label in range(num_classes):
+            imgs, idxs = zip(*fake_img_dict[label])
+            stacked_imgs = torch.stack(imgs)
+            pca = pca_dct[label]
+            
+            X_pca = pca.transform(stacked_imgs)
+            X_proj = pca.inverse_transform(X_pca)
 
-    for label in range(num_classes):
-        imgs, idxs = zip(*fake_img_dict[label])
-        stacked_imgs = torch.stack(imgs)
-        pca = pca_dct[label]
-        
-        X_pca = pca.transform(stacked_imgs)
-        X_proj = pca.inverse_transform(X_pca)
+            reconstruct_diff = stacked_imgs - X_proj
+            # Compute norms of error vectors:
+            norm = np.linalg.norm(reconstruct_diff,axis=-1)
+            # norm = compute_norm(reconstruct_diff)
+            fake_norm_dct[label] = list(zip(norm,idxs))
 
-        reconstruct_diff = stacked_imgs - X_proj
-        # Compute norms of error vectors:
-        norm = np.linalg.norm(reconstruct_diff,axis=-1)
-        # norm = compute_norm(reconstruct_diff)
-        fake_norm_dct[label] = list(zip(norm,idxs))
+        idxs_over_90, idxs_under_90=find_highest_lowest(fake_norm_dct)
+        path_dict_over90 = {i:[] for i in range(len(idxs_over_90))}
+        path_dict_under90 = {i:[] for i in range(len(idxs_under_90))}
 
-    idxs_over_90, idxs_under_90=find_highest_lowest(fake_norm_dct)
-    path_dict_over90 = {i:[] for i in range(len(idxs_over_90))}
-    path_dict_under90 = {i:[] for i in range(len(idxs_under_90))}
+        for label in idxs_over_90:
+            for idx in idxs_over_90[label]:
+                path_dict_over90[label].append(fake_set.get_path(idx))
+            for idx in idxs_under_90[label]:
+                path_dict_under90[label].append(fake_set.get_path(idx))
 
-    for label in idxs_over_90:
-        for idx in idxs_over_90[label]:
-            path_dict_over90[label].append(fake_set.get_path(idx))
-        for idx in idxs_under_90[label]:
-            path_dict_under90[label].append(fake_set.get_path(idx))
-
-    # Saving dictionaries with file paths:
-    with open('path_dict_over90.pickle', 'wb') as handle:
-        pickle.dump(path_dict_over90, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('path_dict_under90.pickle', 'wb') as handle:
-        pickle.dump(path_dict_under90, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # Saving dictionaries with file paths:
+        #with open('path_dict_over90.pickle', 'wb') as handle:
+        #    pickle.dump(path_dict_over90, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        #with open('path_dict_under90.pickle', 'wb') as handle:
+        #    pickle.dump(path_dict_under90, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    else:
+        # If using precomputed PCA subspace using full set (excluding test set)
+        with open('path_dict_over90.pickle', 'rb') as f:
+            path_dict_over90 = pickle.load(f)
+        with open('path_dict_under90.pickle', 'rb') as f:
+            path_dict_under90 = pickle.load(f)
 
     return path_dict_over90, path_dict_under90
