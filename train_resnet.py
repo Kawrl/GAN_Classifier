@@ -281,8 +281,8 @@ def train_resnet(img_dir,
     logging.info('Done!')
     model_path = log_name[:-4] + 'classifier.pth'
     fpath = './resnet_real_classifier.pth'
-    torch.save(resnet.state_dict(), model_path)
-    logging.info(f'Model saved to {fpath}')
+    #torch.save(resnet.state_dict(), model_path)
+    #logging.info(f'Model saved to {fpath}')
 
 
     test_msg = 'Evaluating on test set.'
