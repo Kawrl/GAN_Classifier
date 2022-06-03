@@ -16,6 +16,9 @@ def delete_pth(dir):
 def load_parser():
     parser = ArgumentParser(add_help=True)
     parser.add_argument("--dir", type=dir_path, default="./")
+    args = parser.parse_args()    
+
+    return args
 
 if __name__ == '__main__':
     args = load_parser()
