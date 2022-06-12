@@ -166,6 +166,9 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
             num_components=682
 
         norm_dct,pca_dct=create_norm_dict(real_set,img_dict,norm_dct_pickle=False, num_components=num_components)
+
+        with open('pca_dct_full_set.pickle', 'wb') as handle:
+            pickle.dump(pca_dct, handle, protocol=pickle.HIGHEST_PROTOCOL)
     
     else:
         # If using precomputed PCA subspace using full set (excluding test set)
