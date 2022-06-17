@@ -224,5 +224,5 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
         path_dict_over90 = pickle.load(f)
     with open('path_dict_under90.pickle', 'rb') as f:
         path_dict_under90 = pickle.load(f)
-
-    return path_dict_over90, path_dict_under90'''
+    '''
+    return path_dict_over90, path_dict_under90
