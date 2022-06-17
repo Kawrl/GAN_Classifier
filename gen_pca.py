@@ -155,7 +155,7 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
 
     '''
 
-    '''if not use_full_pca:
+    if not use_full_pca:
         # If using local dataset for creating PCA subspace:
         real_set = create_dataset(real_dir)
         img_dict = create_img_dict(real_set)
@@ -215,13 +215,13 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
         with open('path_dict_over90.pickle', 'wb') as handle:
             pickle.dump(path_dict_over90, handle, protocol=pickle.HIGHEST_PROTOCOL)
         with open('path_dict_under90.pickle', 'wb') as handle:
-            pickle.dump(path_dict_under90, handle, protocol=pickle.HIGHEST_PROTOCOL)'''
+            pickle.dump(path_dict_under90, handle, protocol=pickle.HIGHEST_PROTOCOL)
     #else:
         # If using precomputed PCA subspace using full set (excluding test set)
         # OBS! Change when changing dataset!
-    with open('path_dict_over90.pickle', 'rb') as f:
+    '''with open('path_dict_over90.pickle', 'rb') as f:
         path_dict_over90 = pickle.load(f)
     with open('path_dict_under90.pickle', 'rb') as f:
         path_dict_under90 = pickle.load(f)
 
-    return path_dict_over90, path_dict_under90
+    return path_dict_over90, path_dict_under90'''
