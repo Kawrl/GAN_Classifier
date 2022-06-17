@@ -188,7 +188,7 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
     fake_img_dict = create_img_dict(fake_set)
 
     for label in range(num_classes):
-        imgs, idxs,_ = zip(*fake_img_dict[label])
+        imgs, idxs = zip(*fake_img_dict[label])
         stacked_imgs = torch.stack(imgs)
         pca = pca_dct[label]
         
