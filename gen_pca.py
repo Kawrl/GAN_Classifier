@@ -180,6 +180,7 @@ def create_path_dct_small_set(real_dir, fake_dir,use_full_pca=False):
 
     #if not use_full_pca:
     fake_set = create_dataset(fake_dir)
+    print(len(fake_set))
 
     fake_norm_dct = {}
 
